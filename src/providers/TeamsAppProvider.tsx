@@ -21,9 +21,10 @@ export default function TeamsAppProvider({ children }) {
 export const TeamsContext = React.createContext<microsoftTeams.Context>(null);
 
 const THEME_CACHE_KEY = "devops-project-ms-teams-theme";
+
 export const getFluentTheme = function(teamsContext?: microsoftTeams.Context): ThemePrepared {
   // Do we have a context? if so use theme from there.
-  let themeKey = localStorage.getItem(THEME_CACHE_KEY) || "dark";
+  let themeKey = localStorage.getItem(THEME_CACHE_KEY) || "default";
   if (teamsContext && teamsContext.theme) {
     localStorage.setItem(THEME_CACHE_KEY, teamsContext.theme);
     themeKey = teamsContext.theme;

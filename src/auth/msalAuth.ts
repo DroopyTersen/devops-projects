@@ -3,7 +3,6 @@ import { UserAgentApplication } from "msal";
 export const msalConfig = {
   authority: "https://login.microsoftonline.com/common",
   clientId: "cc4da238-8402-4759-8622-c730b912d313",
-  scopes: "openid profile User.Read",
 };
 
 export const msalInstance = new UserAgentApplication({
@@ -39,21 +38,18 @@ const _authenticate = async function(): Promise<any> {
   return new Promise((resolve, reject) => {
     msalInstance.handleRedirectCallback(
       () => {
-        console.log("Callback success");
         resolve({ isAuthenticated: true });
       },
       (err, accountState) => {
-        console.log("Callback Error");
+        console.log("_authenticate.Callback Error");
         reject({ err, accountState, isAuthenticated: false });
       }
     );
 
     if (msalInstance.isCallback(window.location.hash)) {
-      console.log("What is this .isCallback?");
       return { isAuthenticated: false, renewIframe: true };
     }
 
-    console.log("HERE WE ARE 2");
     if (!msalInstance.getAccount()) {
       msalInstance.loginRedirect();
       return;

@@ -1,5 +1,6 @@
 import { format, addDays, addHours, compareAsc, isBefore } from "date-fns";
 import { getToken } from "../auth/hybridAuth";
+import { cachify } from "../utils/cache";
 const GRAPH_BASE_URL = "https://graph.microsoft.com";
 
 export async function _request(token, url, method = "GET", body = null) {
@@ -42,7 +43,17 @@ export async function devOpsRequest(path, method = "GET", body = null) {
   return _request(token, url, method, body);
 }
 
-export async function getProjects() {
+export async function fetchProjects(): Promise<VSTSProject[]> {
   let data = await devOpsRequest("/projects?$top=10000");
   return data ? data.value : null;
+}
+
+export const getProjects = cachify(fetchProjects, {
+  key: "devops-projects-results",
+});
+
+export interface VSTSProject {
+  id: string;
+  name: string;
+  url: string;
 }
