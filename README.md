@@ -1,6 +1,8 @@
-# Droopy Frontend
+# Azure DevOps Project Finder
 
-The goal is to go **zero to public single page app in less than 60 seconds**
+[https://devopsprojects.netlify.com/](https://devopsprojects.netlify.com/)
+
+This is a Microsoft Teams App (Personal Tab) as well as a standalone web app.
 
 This project uses my current favorites...
 
@@ -11,49 +13,29 @@ This project uses my current favorites...
 - Netlify Hosting
 - Emotion CSS-in-JS
 
-![Demo Usage](https://res.cloudinary.com/droopytersen/image/upload/v1560227965/docs/droopy-frontend.gif)
+It also uses some tools specific to Microsoft 365 development
 
-## Usage Instructions
+- Fluent React / Stardust
+- MSAL.js
+- @microsoft/teams-js
 
-Create a file, `createApp.ps1` in your code directory and run it everytime you start a project.
+![Teams Demo](docs/teams-tab1.gif)
 
-When its all done, you should have a new app hosted publically on Netlify!
+## Microsoft Teams Development
 
-_createApp.ps1_
+It's kind of a pain in the butt to handle supporting both standalone app and an app that runs inside of a Teams Tab.
 
-```powershell
-$appName = Read-Host "What is your app name (all lower no spaces)?"
-git clone https://github.com/DroopyTersen/droopy-frontend $appName
-cd $appName
-Remove-Item -Force -Recurse .git
-git init
-git add -A
-git commit -m "cloned from droopy-frontend"
-code .
-npm install
-npm run deploy
-```
+Issues
 
-Manually you could do the same things with these steps
+- keeping track of whether you have a teamsContext or not
+- MSAL.js is great for Azure AD auth on your standalone app. However because Teams Tabs are IFrames, you can't use MSAL.js in the easy "redirect" way you can on a standalone app.
 
-1. Clone the repo, adding your app name to the end
-2. Navgigate into the new folder
-3. Delete all my GIT stuff and start over with your own GIT repo
-4. Install dependencies
-5. `npm run deploy`
-
-### Don't forget to
-
-1. Update `package.json` (name, description, etc...)
-2. Update the page title in `index.html`
-3. Update app title in `manifest.webmanifest`
-
-### Developing
+## Developing
 
 - To develop locally with hot-reloading run `npm run start`
 - The `/static` folder contents gets copied into `/dist` at build. You might not even need it though.
 
-### Deploy it
+## Deploy it
 
 - First it will create a production build
 - If you haven't logged into `netlify-cli` yet, a browser window will open so you can authorize Netlify to deploy for you.
