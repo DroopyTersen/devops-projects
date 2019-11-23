@@ -9,6 +9,7 @@
     "noUnusedParameters": false,
     "noImplicitAny": false,
     "lib": ["esnext", "dom"],
-    "module": "esnext"
+    "module": "esnext",
+    "moduleResolution": "node"
   }
 }

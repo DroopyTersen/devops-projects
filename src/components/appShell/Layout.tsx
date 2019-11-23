@@ -23,13 +23,3 @@ const StyledScreen = styled.div`
   height: 100%;
   padding: 0 25px;
 `;
-
-export const theme = {
-  black: "#161616",
-  dark: "#3a4e48",
-  white: "#eee",
-  light: "#ccc",
-  primary: "#ff6f59",
-  secondary: "#43aa8b",
-  red: "#b6afae",
-};
