@@ -9,6 +9,7 @@ import {
   ThemePrepared,
   SplitButton,
   Loader,
+  Text,
 } from "@stardust-ui/react";
 import styled from "@emotion/styled";
 import useAsyncData from "../../hooks/useAsyncData";
@@ -86,12 +87,12 @@ export function CodeButton({ url, theme, projectName }) {
       key: repo.name,
       content: (
         <a href={repo.webUrl} target="_blank">
-          {repo.name}
+          <Text color="brand">{repo.name}</Text>
         </a>
       ),
     }));
   } else if (repos && !repos.length) {
-    menu = [{ key: "status", content: "No GIT Repositories found" }];
+    menu = [{ key: "status", content: <Text color="brand">No GIT Repositories found</Text> }];
   }
   let button = {
     content: "Code",
