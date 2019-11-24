@@ -1,7 +1,5 @@
-import { format, addDays, addHours, compareAsc, isBefore } from "date-fns";
 import { getToken } from "../auth/hybridAuth";
 import { cachify } from "../utils/cache";
-const GRAPH_BASE_URL = "https://graph.microsoft.com";
 
 export async function _request(token, url, method = "GET", body = null) {
   let requestOptions: RequestInit = {
@@ -27,13 +25,6 @@ export async function _request(token, url, method = "GET", body = null) {
   });
 }
 
-// export async function graphRequest(path, method = "GET", body = null) {
-//   let token = await acquireGraphToken();
-//   let url = GRAPH_BASE_URL + path;
-
-//   return _request(token, url, method, body);
-// }
-
 export async function devOpsRequest(path, method = "GET", body = null) {
   let token = await getToken();
   if (!token) return null;
@@ -51,6 +42,29 @@ export async function fetchProjects(): Promise<VSTSProject[]> {
 export const getProjects = cachify(fetchProjects, {
   key: "devops-projects-results",
 });
+
+const PINNED_CACHE_KEY = "devops-project-pinned";
+export const getPinnedProjecs = function(): string[] {
+  try {
+    let cachedStr = localStorage.getItem(PINNED_CACHE_KEY);
+    if (cachedStr) {
+      return JSON.parse(cachedStr).sort();
+    }
+  } catch (err) {}
+  return [];
+};
+
+export const togglePin = (projectName: string) => {
+  let pinnedProjects = getPinnedProjecs();
+  let exists = pinnedProjects.find((p) => p === projectName);
+  if (exists) {
+    pinnedProjects = pinnedProjects.filter((p) => p !== projectName);
+  } else {
+    pinnedProjects.push(projectName);
+  }
+  localStorage.setItem(PINNED_CACHE_KEY, JSON.stringify(pinnedProjects));
+  return getPinnedProjecs();
+};
 
 export interface VSTSProject {
   id: string;

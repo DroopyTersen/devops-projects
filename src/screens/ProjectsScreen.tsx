@@ -7,10 +7,12 @@ import styled from "@emotion/styled";
 import ProjectCard from "../components/projects/ProjectCard";
 import useDebounce from "../hooks/useDebounce";
 import { getAuthState } from "../auth/hybridAuth";
+import useProjects, { usePinnedProjects } from "../data/useProjects";
+import { getQueryStringData } from "../utils/utils";
 
 export default function ProjectsScreen({ location }: BaseScreenProps) {
-  let { data: projects, isLoading, error } = useAsyncData(null, getProjects, []);
   let { isTeams } = getAuthState();
+  let { pinned = false } = getQueryStringData();
   return (
     <Layout>
       <>
@@ -19,36 +21,36 @@ export default function ProjectsScreen({ location }: BaseScreenProps) {
             Azure DevOps Projects
           </Header>
         )}
-        <ProjectsContainer projects={projects} />
+        <Projects onlyPinned={pinned} />
       </>
     </Layout>
   );
 }
 
-function ProjectsContainer({ projects }) {
-  if (!projects) return <h2>Loading Projects....</h2>;
-  if (projects && projects.length === 0) return <h2>No Projects Found</h2>;
-  let [filter, setFilter] = useState("");
+function Projects({ onlyPinned = false }) {
+  let { isLoading, error, projects, setFilter, pinned, togglePinned } = useProjects(50, onlyPinned);
+  if (isLoading) return <Header as="h2">Loading Projects....</Header>;
+  if (error) return <Header as="h2">ERROR</Header>;
 
-  let filteredProjects = projects
-    .filter((p: VSTSProject) => {
-      if (!filter) return p;
-      return p.name.toLowerCase().indexOf(filter.toLowerCase()) > -1;
-    })
-    .sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1))
-    .slice(0, 100);
-  if (filter) {
-  }
   return (
     <div>
       <div>
         <SearchBox onChange={setFilter} />
       </div>
-      <StyledProjectsList>
-        {filteredProjects.map((project) => (
-          <ProjectCard project={project} key={project.id} />
-        ))}
-      </StyledProjectsList>
+      {projects && projects.length === 0 ? (
+        <em>No Projects Found</em>
+      ) : (
+        <StyledProjectsList>
+          {projects.map((project) => (
+            <ProjectCard
+              project={project}
+              key={project.id}
+              togglePinned={togglePinned}
+              isPinned={pinned.includes(project.name)}
+            />
+          ))}
+        </StyledProjectsList>
+      )}
     </div>
   );
 }

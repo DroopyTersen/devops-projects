@@ -1,17 +1,26 @@
 import React from "react";
 import { VSTSProject } from "../../data/api";
-import { Segment, Header, Button, themes } from "@stardust-ui/react";
+import { Segment, Header, Button, themes, Icon } from "@stardust-ui/react";
 import styled from "@emotion/styled";
 import { getAuthState } from "../../auth/hybridAuth";
 import { getFluentTheme } from "../../providers/TeamsAppProvider";
 
-function ProjectCard({ project }: ProjectCardProps) {
+function ProjectCard({ project, isPinned = false, togglePinned }: ProjectCardProps) {
   if (!project) return null;
   let links = getLinks(project);
   let { teamsContext } = getAuthState();
   let theme = getFluentTheme(teamsContext);
   return (
     <StyledSegment color="brand" theme={theme}>
+      <StyledBookmarkButton
+        title="Toggle Pinned"
+        size="smallest"
+        circular
+        primary={isPinned}
+        onClick={() => togglePinned(project.name)}
+      >
+        <Icon outline={!isPinned} name="bookmark" />
+      </StyledBookmarkButton>
       <Header as="h3">{project.name}</Header>
       <StyledLinksContainer>
         <ButtonLink url={links.backlog} theme={theme}>
@@ -55,7 +64,14 @@ function ButtonLink({ url, children, theme }) {
     </a>
   );
 }
+
+const StyledBookmarkButton = styled(Button)`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+`;
 const StyledSegment = styled(Segment)`
+  position: relative;
   text-align: center;
   background: ${(props) => (props.theme === themes.teamsDark ? "#121215" : "initial")};
 `;
@@ -75,4 +91,6 @@ const StyledLinksContainer = styled.div`
 `;
 export interface ProjectCardProps {
   project: VSTSProject;
+  isPinned: boolean;
+  togglePinned: (projectName: string) => void;
 }
