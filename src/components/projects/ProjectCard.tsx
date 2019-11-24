@@ -1,9 +1,18 @@
-import React from "react";
-import { VSTSProject } from "../../data/api";
-import { Segment, Header, Button, themes, Icon, ThemePrepared } from "@stardust-ui/react";
+import React, { useState } from "react";
+import { VSTSProject, VSTSGitRepo, getRepositories } from "../../data/api";
+import {
+  Segment,
+  Header,
+  Button,
+  themes,
+  Icon,
+  ThemePrepared,
+  SplitButton,
+  Loader,
+} from "@stardust-ui/react";
 import styled from "@emotion/styled";
-import { getAuthState } from "../../auth/hybridAuth";
-import { getFluentTheme } from "../../providers/TeamsAppProvider";
+import useAsyncData from "../../hooks/useAsyncData";
+import { async } from "q";
 
 function ProjectCard({
   project,
@@ -34,9 +43,7 @@ function ProjectCard({
         <ButtonLink url={links.board} theme={theme}>
           Board
         </ButtonLink>
-        <ButtonLink url={links.code} theme={theme}>
-          Code
-        </ButtonLink>
+        <CodeButton url={links.code} theme={theme} projectName={project.name} />
       </StyledLinksContainer>
     </StyledSegment>
   );
@@ -60,7 +67,48 @@ const getLinks = function(project) {
   };
 };
 
-function ButtonLink({ url, children, theme }) {
+export function CodeButton({ url, theme, projectName }) {
+  let [shouldLoadRepos, setShouldLoadRepos] = useState(false);
+  let { data: repos, isLoading, error } = useAsyncData<VSTSGitRepo[]>(
+    null,
+    async (shouldLoad, projectName) => {
+      if (!shouldLoad) return null;
+      return getRepositories(projectName);
+    },
+    [shouldLoadRepos, projectName]
+  );
+  let isPrimary = theme === themes.teams;
+
+  let menu: any = [{ key: "status", content: "" }];
+
+  if (repos && repos.length) {
+    menu = repos.map((repo) => ({
+      key: repo.name,
+      content: (
+        <a href={repo.webUrl} target="_blank">
+          {repo.name}
+        </a>
+      ),
+    }));
+  } else if (repos && !repos.length) {
+    menu = [{ key: "status", content: "No GIT Repositories found" }];
+  }
+  let button = {
+    content: "Code",
+  };
+  return (
+    <SplitButton
+      primary={isPrimary}
+      key={"code-button-" + projectName}
+      menu={menu}
+      button={button}
+      onOpenChange={(e, { open }) => setShouldLoadRepos(open)}
+      onMainButtonClick={() => window.open(url)}
+    />
+  );
+}
+
+export function ButtonLink({ url, children, theme }) {
   let isPrimary = theme === themes.teams;
   return (
     <a href={url} target="_blank">

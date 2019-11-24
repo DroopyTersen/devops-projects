@@ -29,13 +29,34 @@ export async function devOpsRequest(path, method = "GET", body = null) {
   let token = await getToken();
   if (!token) return null;
   console.log("DEVEOPS TOKEN", token);
-  let url = "https://skyline.visualstudio.com/_apis" + path;
+  let url = "https://skyline.visualstudio.com" + path;
 
   return _request(token, url, method, body);
 }
+export async function fetchRepositories(projectName: string) {
+  try {
+    let path = `/${projectName}/_apis/git/repositories`;
+    let data = await devOpsRequest(path);
+    if (!data || !data.value) return [];
+
+    let repos: VSTSGitRepo[] = data.value
+      .map((raw) => ({
+        id: raw.id,
+        name: raw.name,
+        webUrl: raw.webUrl,
+      }))
+      .sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
+
+    return repos;
+  } catch (err) {
+    return [];
+  }
+}
+
+export const getRepositories = fetchRepositories;
 
 export async function fetchProjects(): Promise<VSTSProject[]> {
-  let data = await devOpsRequest("/projects?$top=10000");
+  let data = await devOpsRequest("/_apis/projects?$top=10000");
   return data ? data.value : null;
 }
 
@@ -72,4 +93,10 @@ export interface VSTSProject {
   id: string;
   name: string;
   url: string;
+}
+
+export interface VSTSGitRepo {
+  name: string;
+  id: string;
+  webUrl: string;
 }
