@@ -39,9 +39,11 @@ export async function fetchProjects(): Promise<VSTSProject[]> {
   return data ? data.value : null;
 }
 
-export const getProjects = cachify(fetchProjects, {
-  key: "devops-projects-results",
-});
+// export const getProjects = cachify(fetchProjects, {
+//   key: "devops-projects-results",
+// });
+
+export const getProjects = fetchProjects;
 
 const PINNED_CACHE_KEY = "devops-project-pinned";
 export const getPinnedProjecs = function(): string[] {

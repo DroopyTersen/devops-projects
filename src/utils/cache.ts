@@ -97,7 +97,9 @@ export const cachify = function(asyncFn: any, cacheConfig: CacheOptions, context
     let data = getCache(cacheOptions);
     if (!data) {
       data = await asyncFn.apply(context, args);
-      setCache(cacheOptions, data);
+      if (data) {
+        setCache(cacheOptions, data);
+      }
     }
     return data;
   };
