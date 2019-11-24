@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Layout, { BaseScreenProps } from "../components/appShell/Layout";
-import { Header, Input } from "@stardust-ui/react";
+import { Header, Input, Loader } from "@stardust-ui/react";
 import { getProjects, VSTSProject } from "../data/api";
 import useAsyncData from "../hooks/useAsyncData";
 import styled from "@emotion/styled";
@@ -29,7 +29,12 @@ export default function ProjectsScreen({ location }: BaseScreenProps) {
 
 function Projects({ onlyPinned = false }) {
   let { isLoading, error, projects, setFilter, pinned, togglePinned } = useProjects(50, onlyPinned);
-  if (isLoading) return <Header as="h2">Loading Projects....</Header>;
+  if (isLoading)
+    return (
+      <StyledLoading>
+        <Loader label="Loading Projects from Azure DevOps" />
+      </StyledLoading>
+    );
   if (error) return <Header as="h2">ERROR</Header>;
 
   return (
@@ -71,6 +76,7 @@ function SearchBox({ onChange }) {
       icon="search"
       clearable={true}
       placeholder="Search..."
+      autoFocus={true}
       onChange={(e, { value }) => setInputValue(value)}
     />
   );
@@ -80,4 +86,12 @@ const StyledProjectsList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
   grid-gap: 20px;
+`;
+
+const StyledLoading = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
 `;
