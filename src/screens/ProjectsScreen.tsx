@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Layout, { BaseScreenProps } from "../components/appShell/Layout";
-import { Header, Input, Loader } from "@stardust-ui/react";
+import { Header, Input, Loader, Button } from "@stardust-ui/react";
 import { getProjects, VSTSProject } from "../data/api";
 import useAsyncData from "../hooks/useAsyncData";
 import styled from "@emotion/styled";
@@ -28,7 +28,18 @@ export default function ProjectsScreen({ location }: BaseScreenProps) {
 }
 
 function Projects({ onlyPinned = false }) {
-  let { isLoading, error, projects, setFilter, pinned, togglePinned } = useProjects(50, onlyPinned);
+  let [maxItems, setMaxItems] = useState(50);
+  let {
+    isLoading,
+    error,
+    projects,
+    setFilter,
+    pinned,
+    togglePinned,
+    filter,
+    showMore,
+  } = useProjects(onlyPinned);
+
   if (isLoading)
     return (
       <StyledLoading>
@@ -45,16 +56,23 @@ function Projects({ onlyPinned = false }) {
       {projects && projects.length === 0 ? (
         <em>No Projects Found</em>
       ) : (
-        <StyledProjectsList>
-          {projects.map((project) => (
-            <ProjectCard
-              project={project}
-              key={project.id}
-              togglePinned={togglePinned}
-              isPinned={pinned.includes(project.name)}
-            />
-          ))}
-        </StyledProjectsList>
+        <>
+          <StyledProjectsList key={filter}>
+            {projects.map((project) => (
+              <ProjectCard
+                project={project}
+                key={project.id}
+                togglePinned={togglePinned}
+                isPinned={pinned.includes(project.name)}
+              />
+            ))}
+          </StyledProjectsList>
+          {showMore && (
+            <Button primary fluid styles={{ margin: "20px 0" }} onClick={() => showMore()}>
+              Show more
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

@@ -10,6 +10,7 @@ initAuth().then((authState) => {
   if (!authState.isAuthenticated && !unAuthenticatedPaths.includes(window.location.pathname)) {
     window.location.href = window.location.origin + "/login";
   } else {
-    ReactDOM.render(React.createElement(App), document.getElementById("root"));
+    (ReactDOM as any).createRoot(document.getElementById("root")).render(React.createElement(App));
+    // ReactDOM.render(React.createElement(App), document.getElementById("root"));
   }
 });
