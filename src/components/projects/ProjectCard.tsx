@@ -1,15 +1,20 @@
 import React from "react";
 import { VSTSProject } from "../../data/api";
-import { Segment, Header, Button, themes, Icon } from "@stardust-ui/react";
+import { Segment, Header, Button, themes, Icon, ThemePrepared } from "@stardust-ui/react";
 import styled from "@emotion/styled";
 import { getAuthState } from "../../auth/hybridAuth";
 import { getFluentTheme } from "../../providers/TeamsAppProvider";
 
-function ProjectCard({ project, isPinned = false, togglePinned }: ProjectCardProps) {
+function ProjectCard({
+  project,
+  isPinned = false,
+  togglePinned,
+  theme = themes.teams,
+}: ProjectCardProps) {
+  console.log("RENDERING", project.name);
   if (!project) return null;
   let links = getLinks(project);
-  let { teamsContext } = getAuthState();
-  let theme = getFluentTheme(teamsContext);
+
   return (
     <StyledSegment color="brand" theme={theme}>
       <StyledBookmarkButton
@@ -38,6 +43,7 @@ function ProjectCard({ project, isPinned = false, togglePinned }: ProjectCardPro
 }
 
 export default React.memo(ProjectCard);
+// export default ProjectCard;
 
 const BASE_URL = "https://skyline.visualstudio.com";
 const getLinks = function(project) {
@@ -100,4 +106,5 @@ export interface ProjectCardProps {
   project: VSTSProject;
   isPinned: boolean;
   togglePinned: (projectName: string) => void;
+  theme: ThemePrepared;
 }

@@ -9,6 +9,7 @@ import useDebounce from "../hooks/useDebounce";
 import { getAuthState } from "../auth/hybridAuth";
 import useProjects, { usePinnedProjects } from "../data/useProjects";
 import { getQueryStringData } from "../utils/utils";
+import { getFluentTheme } from "../providers/TeamsAppProvider";
 
 export default function ProjectsScreen({ location }: BaseScreenProps) {
   let { isTeams } = getAuthState();
@@ -28,7 +29,6 @@ export default function ProjectsScreen({ location }: BaseScreenProps) {
 }
 
 function Projects({ onlyPinned = false }) {
-  let [maxItems, setMaxItems] = useState(50);
   let {
     isLoading,
     error,
@@ -39,6 +39,8 @@ function Projects({ onlyPinned = false }) {
     filter,
     showMore,
   } = useProjects(onlyPinned);
+  let { teamsContext } = getAuthState();
+  let theme = getFluentTheme(teamsContext);
 
   if (isLoading)
     return (
@@ -57,13 +59,14 @@ function Projects({ onlyPinned = false }) {
         <em>No Projects Found</em>
       ) : (
         <>
-          <StyledProjectsList key={filter}>
+          <StyledProjectsList>
             {projects.map((project) => (
               <ProjectCard
                 project={project}
                 key={project.id}
                 togglePinned={togglePinned}
                 isPinned={pinned.includes(project.name)}
+                theme={theme}
               />
             ))}
           </StyledProjectsList>

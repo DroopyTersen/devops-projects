@@ -18,15 +18,15 @@ export default function useProjects(onlyPinned = false) {
 
   let pinnedProjects = filteredProjects.filter((p) => pinned.includes(p.name));
   let unPinnedProjects = filteredProjects.filter((p) => !pinned.includes(p.name));
-  let projects = [...pinnedProjects, ...(onlyPinned ? [] : unPinnedProjects)].slice(0, maxItems);
+  let projects = [...pinnedProjects, ...(onlyPinned ? [] : unPinnedProjects)];
 
   const showMore =
-    filteredProjects.length < maxItems ? null : () => setMaxItems((prev) => prev + PAGE_SIZE * 2);
+    projects.length < maxItems ? null : () => setMaxItems((prev) => prev + PAGE_SIZE * 2);
 
   return {
     isLoading,
     error,
-    projects,
+    projects: projects.slice(0, maxItems),
     setFilter: (text) => {
       setMaxItems(PAGE_SIZE);
       setFilter(text);
