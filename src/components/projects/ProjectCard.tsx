@@ -21,9 +21,7 @@ function ProjectCard({ project, isPinned = false, togglePinned }: ProjectCardPro
       >
         <Icon outline={!isPinned} name="bookmark" />
       </StyledBookmarkButton>
-      <Header as="h3" styles={{ overflowWrap: "break-word" }}>
-        {project.name}
-      </Header>
+      <StyledProjectName>{project.name}</StyledProjectName>
       <StyledLinksContainer>
         <ButtonLink url={links.backlog} theme={theme}>
           Backlog
@@ -66,6 +64,13 @@ function ButtonLink({ url, children, theme }) {
     </a>
   );
 }
+
+const StyledProjectName = styled(Header)`
+  letter-spacing: 0.3px;
+  font-weight: 200;
+  font-size: 1.15em;
+  overflow-wrap: break-word;
+`;
 
 const StyledBookmarkButton = styled(Button)`
   position: absolute;

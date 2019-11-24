@@ -2,7 +2,7 @@ import useAsyncData from "../hooks/useAsyncData";
 import { getProjects, VSTSProject, getPinnedProjecs, togglePin } from "./api";
 import { useState, useCallback } from "react";
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 50;
 export default function useProjects(onlyPinned = false) {
   let { pinned, togglePinned } = usePinnedProjects();
   let { data: allProjects, isLoading, error } = useAsyncData(null, getProjects, []);
