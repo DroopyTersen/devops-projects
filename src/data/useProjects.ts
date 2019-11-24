@@ -2,11 +2,12 @@ import useAsyncData from "../hooks/useAsyncData";
 import { getProjects, VSTSProject, getPinnedProjecs, togglePin } from "./api";
 import { useState, useCallback } from "react";
 
+const PAGE_SIZE = 30;
 export default function useProjects(onlyPinned = false) {
   let { pinned, togglePinned } = usePinnedProjects();
   let { data: allProjects, isLoading, error } = useAsyncData(null, getProjects, []);
   let [filter, setFilter] = useState("");
-  let [maxItems, setMaxItems] = useState(50);
+  let [maxItems, setMaxItems] = useState(PAGE_SIZE);
 
   let filteredProjects = (allProjects || [])
     .filter((p: VSTSProject) => {
@@ -20,14 +21,14 @@ export default function useProjects(onlyPinned = false) {
   let projects = [...pinnedProjects, ...(onlyPinned ? [] : unPinnedProjects)].slice(0, maxItems);
 
   const showMore =
-    filteredProjects.length < maxItems ? null : () => setMaxItems((prev) => prev + 50);
+    filteredProjects.length < maxItems ? null : () => setMaxItems((prev) => prev + PAGE_SIZE * 2);
 
   return {
     isLoading,
     error,
     projects,
     setFilter: (text) => {
-      setMaxItems(50);
+      setMaxItems(PAGE_SIZE);
       setFilter(text);
     },
     pinned,
